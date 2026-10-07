@@ -1,0 +1,44 @@
+{
+  "name": "ayat-of-the-day",
+  "version": "0.4.0",
+  "description": "A real Quranic ayat, fetched live every day - CLI and Claude Code plugin",
+  "type": "module",
+  "bin": {
+    "ayat-of-the-day": "dist/index.js",
+    "ayat": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "cli",
+    "quran",
+    "ayat",
+    "ayah",
+    "islamic",
+    "claude-code",
+    "plugin",
+    "status-line"
+  ],
+  "author": {
+    "name": "thisismairaj",
+    "url": "https://github.com/thisismairaj"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thisismairaj/ayat-of-the-day.git"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  }
+}

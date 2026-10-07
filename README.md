@@ -2,9 +2,11 @@
 
 ![ayat-of-the-day](assets/banner.png)
 
-A Claude Code mod that fetches a real Quranic ayat each day, live from
+Fetches a real Quranic ayat each day, live from
 [api.alquran.cloud](https://alquran.cloud/api), for you to show in your own
-status line — plus `/ayat` (or `/ayah`) to see the full verse.
+status line — as a Claude Code mod (`/ayat` or `/ayah` to see the full verse)
+and as a standalone CLI (`npx ayat-of-the-day`) that works anywhere, not just
+inside Claude Code.
 
 Example status line: `📖 2:286 — Allah does not burden a soul beyond what it can bear.`
 
@@ -21,8 +23,9 @@ Example status line: `📖 2:286 — Allah does not burden a soul beyond what it
   Claude Code's built-in "plugin notice" row, which always gets prefixed
   with the plugin's name and a warning icon by the engine, with no way for
   a plugin to turn that off
-- Zero npm dependencies, zero build step — the hooks module runs directly as
-  TypeScript, no `dist/` folder needed
+- The Claude Code mod itself has zero npm dependencies and zero build step —
+  `hooks/register.tsx` runs directly as TypeScript. (The standalone CLI is a
+  separate piece with its own minimal build - see Development below.)
 
 ## Requirements
 
@@ -47,6 +50,23 @@ claude plugin install ayat-of-the-day
 After installing, you still need to wire the cache file into your own status
 line (below) — the plugin itself doesn't display anything on its own.
 
+## CLI
+
+Works standalone, with no Claude Code involved at all:
+
+```bash
+npx ayat-of-the-day              # full verse, formatted
+npx ayat-of-the-day --status     # one line, truncated - for status bars
+npx ayat-of-the-day --json       # {"ref","text","date","stale"}
+npx ayat-of-the-day --plain      # no emoji
+```
+
+`ayat` works as a short alias for `ayat-of-the-day` too. The CLI shares the
+exact same cache file (`~/.claude/ayat-of-the-day-cache.json`) and the same
+day-of-year formula as the Claude Code mod, so if you have both installed
+they always agree on "today's" ayat - whichever one fetches first writes the
+cache, the other just reads it.
+
 ## How it works
 
 Each session start, the mod computes a global ayah number from the day of
@@ -70,7 +90,16 @@ ayat to a cache file, and you read it yourself from your status line script
 as one more segment, the same way you'd integrate any other status source.
 
 If your `~/.claude/settings.json` has a `statusLine.command` pointing at
-your own script, add something like this to it:
+your own script, the simplest integration is the CLI's own `--status` flag:
+
+```bash
+ayat_out=$(npx ayat-of-the-day --status 2>/dev/null)
+[ -n "$ayat_out" ] && echo "$ayat_out"  # or append it as your own segment
+```
+
+That re-runs `npx` on every status line render though, which has its own
+startup overhead. To read the cache file directly instead (no `npx` call per
+render):
 
 ```bash
 ayat_cache="$HOME/.claude/ayat-of-the-day-cache.json"
@@ -103,15 +132,29 @@ not something generated or guessed.
 
 ## Development
 
-This is a function-hooks mod, not a compiled plugin — `hooks/register.tsx`
-runs directly, no build step. To develop it locally, use Claude Code's
-`plugin-authoring` skill, which hot-reloads a mod folder on save.
+Two separate pieces, two separate build stories:
 
-Validate the plugin manifest and hooks module:
+**The Claude Code mod** (`hooks/register.tsx`) is not a compiled plugin — it
+runs directly, no build step. To develop it locally, use Claude Code's
+`plugin-authoring` skill, which hot-reloads a mod folder on save. Validate
+the plugin manifest and hooks module:
 
 ```bash
 claude plugin validate .
 ```
+
+**The CLI** (`src/`) does need a build, since npm can't execute raw
+TypeScript:
+
+```bash
+npm install
+npm run build    # compiles src/ -> dist/
+node dist/index.js --status
+```
+
+`dist/` is committed to the repo (same reason claude-pray commits its own
+`dist/`): `npx github:thisismairaj/ayat-of-the-day` works straight off the
+repo with no build step required of the person running it.
 
 ## License
 

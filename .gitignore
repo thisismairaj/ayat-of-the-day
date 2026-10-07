@@ -1,2 +1,5 @@
 # working notes: kept local, not shown publicly
 docs/
+
+# CLI build artifacts
+node_modules/
