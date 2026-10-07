@@ -88,15 +88,15 @@ function truncate(s: string, max: number): string {
 
 function spinnerMessage(ayat: Ayat | undefined, stale: boolean): string {
   if (!ayat) return '📖 Ayat unavailable'
-  // Kept deliberately short: ui.render for Spinner fires on every animation
-  // tick (many times a second), and the engine appends its own elapsed-time/
-  // mode suffix after whatever we return. A long line wraps on normal
-  // terminal widths, and as the elapsed-seconds digit count changes
-  // ("9s" -> "10s"), the wrap point shifts - the whole block visibly
-  // reflows at high frequency, which reads as the text "moving." Staying
-  // well within one line, even on a narrow terminal, is what actually fixes
-  // that - not a bigger truncation budget.
-  return `📖 ${ayat.ref} — ${truncate(ayat.text, 55)}`
+  // ui.render for Spinner fires on every animation tick (many times a
+  // second), and the engine appends its own elapsed-time/mode suffix after
+  // whatever we return. A long line wraps on normal terminal widths, and as
+  // the elapsed-seconds digit count changes ("9s" -> "10s"), the wrap point
+  // shifts - the whole block visibly reflows at high frequency, which reads
+  // as the text "moving." 100 chars is a middle ground: enough of the ayat
+  // to be worth reading, short enough to stay on one line on most terminal
+  // widths.
+  return `📖 ${ayat.ref} — ${truncate(ayat.text, 100)}`
 }
 
 async function commandResult($: any): Promise<{ text: string }> {

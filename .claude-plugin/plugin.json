@@ -1,6 +1,6 @@
 {
   "name": "ayat-of-the-day",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Fetches a daily Quranic ayat live from api.alquran.cloud, shown in place of the spinner verb while Claude works, with a /ayat command for the full verse",
   "author": {
     "name": "thisismairaj",
