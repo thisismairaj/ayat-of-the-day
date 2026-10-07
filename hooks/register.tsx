@@ -67,6 +67,14 @@ function truncate(s: string, max: number): string {
   return s.length > max ? s.slice(0, max - 1).trimEnd() + '…' : s
 }
 
+function fullText(ayat: Ayat | undefined, stale: boolean): string {
+  if (!ayat) {
+    return 'Could not fetch an ayat - api.alquran.cloud is unreachable and nothing is cached yet.'
+  }
+  const staleNote = stale ? '\n\n*(cached - could not reach api.alquran.cloud for a fresh fetch)*' : ''
+  return `**Ayat of the day — Quran ${ayat.ref}** (Saheeh International)\n\n> ${ayat.text}${staleNote}`
+}
+
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     const { ayat, stale } = await getTodaysAyat($)
@@ -88,10 +96,15 @@ export const register: Register = on => {
 
   on('command.run', { command: 'ayat' }, async $ => {
     const { ayat, stale } = await getTodaysAyat($)
-    if (!ayat) {
-      return { text: 'Could not fetch an ayat - api.alquran.cloud is unreachable and nothing is cached yet.' }
-    }
-    const staleNote = stale ? '\n\n*(cached - could not reach api.alquran.cloud for a fresh fetch)*' : ''
-    return { text: `**Ayat of the day — Quran ${ayat.ref}** (Saheeh International)\n\n> ${ayat.text}${staleNote}` }
+    return { text: fullText(ayat, stale) }
+  })
+
+  // Draw the CommandOutput row ourselves, from a fresh lookup, instead of
+  // letting the engine's default renderer frame the command.run text with a
+  // "plugin-name: " prefix.
+  on('ui.render', { component: 'CommandOutput', props: { command: 'ayat' } }, async ($, e) => {
+    const { Markdown } = $.ui.resolve(e)
+    const { ayat, stale } = await getTodaysAyat($)
+    return <Markdown text={fullText(ayat, stale)} />
   })
 }
