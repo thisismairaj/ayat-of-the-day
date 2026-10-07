@@ -63,10 +63,6 @@ async function getTodaysAyat($: any): Promise<{ ayat: Ayat | undefined; stale: b
   return { ayat: cached, stale: cached !== undefined }
 }
 
-function truncate(s: string, max: number): string {
-  return s.length > max ? s.slice(0, max - 1).trimEnd() + '…' : s
-}
-
 function fullText(ayat: Ayat | undefined, stale: boolean): string {
   if (!ayat) {
     return 'Could not fetch an ayat - api.alquran.cloud is unreachable and nothing is cached yet.'
@@ -75,16 +71,32 @@ function fullText(ayat: Ayat | undefined, stale: boolean): string {
   return `**Ayat of the day — Quran ${ayat.ref}** (Saheeh International)\n\n> ${ayat.text}${staleNote}`
 }
 
+// $.ui.status pins a SEPARATE "plugin notice" row (always framed with the
+// plugin's name and a warning-style icon by the engine - not configurable,
+// and not the same thing as a real statusLine.command row). That's not what
+// we want here: we want to appear as one segment inside the user's own real
+// status line. So instead we write today's ayat to a fixed cache file, and
+// the user's statusline-command.sh reads it and appends it as a segment -
+// see README.md's "Integrating with your status line" section.
+async function homeDir($: any): Promise<string | undefined> {
+  return (await $.env.get('HOME')) ?? (await $.env.get('USERPROFILE'))
+}
+
+async function writeStatusCache($: any, ayat: Ayat | undefined, stale: boolean) {
+  const home = await homeDir($)
+  if (!home) return // nowhere reliable to write - statusline-command.sh just won't find anything
+  const payload = ayat ? { ...ayat, stale } : { date: todayUTC(), stale: true, unavailable: true }
+  try {
+    await $.fs.write(`${home}/.claude/ayat-of-the-day-cache.json`, JSON.stringify(payload))
+  } catch {
+    // best-effort - a write failure here shouldn't block session start
+  }
+}
+
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     const { ayat, stale } = await getTodaysAyat($)
-
-    if (ayat) {
-      const staleNote = stale ? ' (cached, offline)' : ''
-      $.ui.status(`📖 ${ayat.ref}${staleNote} — ${truncate(ayat.text, 110)}`)
-    } else {
-      $.ui.status(`📖 Ayat of the day unavailable (api.alquran.cloud unreachable)`)
-    }
+    await writeStatusCache($, ayat, stale)
 
     await $.command.register({
       name: 'ayat',

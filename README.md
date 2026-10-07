@@ -2,9 +2,9 @@
 
 ![ayat-of-the-day](assets/banner.png)
 
-A Claude Code status-line mod that shows a real Quranic ayat each day, fetched
-live from [api.alquran.cloud](https://alquran.cloud/api), with a `/ayat`
-command to see the full verse.
+A Claude Code mod that fetches a real Quranic ayat each day, live from
+[api.alquran.cloud](https://alquran.cloud/api), for you to show in your own
+status line — plus a `/ayat` command to see the full verse.
 
 Example status line: `📖 2:286 — Allah does not burden a soul beyond what it can bear.`
 
@@ -13,9 +13,13 @@ Example status line: `📖 2:286 — Allah does not burden a soul beyond what it
 - Real ayat text, fetched live — not a hardcoded list
 - Same ayat for everyone on a given day (deterministic, by day-of-year —
   no server-side "random" endpoint needed)
-- Cached per day via Claude Code's own plugin store, so it only fetches once
-  a day, and falls back to the last cached ayat if the network is down
+- Cached per day, so it only fetches once a day, and falls back to the last
+  cached ayat if the network is down
 - `/ayat` command shows the full verse and its reference (e.g. `2:255`)
+- Writes to a plain cache file your *own* status line script reads — not
+  Claude Code's built-in "plugin notice" row, which always gets prefixed
+  with the plugin's name and a warning icon by the engine, with no way for
+  a plugin to turn that off
 - Zero npm dependencies, zero build step — the hooks module runs directly as
   TypeScript, no `dist/` folder needed
 
@@ -39,20 +43,56 @@ claude plugin marketplace add thisismairaj/ayat-of-the-day
 claude plugin install ayat-of-the-day
 ```
 
-No configuration needed — it works immediately on the next session start.
+After installing, you still need to wire the cache file into your own status
+line (below) — the plugin itself doesn't display anything on its own.
 
 ## How it works
 
 Each session start, the mod computes a global ayah number from the day of
 the year (1–6236, the total ayah count in the Quran), fetches that ayah's
 text and reference from `api.alquran.cloud` (Saheeh International
-translation), and sets it as the status line via `$.ui.status`. The result
-is cached for the day via `$.store`, so later sessions the same day reuse it
-instead of refetching, and if the API is ever unreachable, the last cached
-ayat is shown instead of nothing.
+translation), and writes it to `~/.claude/ayat-of-the-day-cache.json`. The
+result is also cached internally via `$.store`, so later sessions the same
+day reuse it instead of refetching, and if the API is ever unreachable, the
+last cached ayat is written instead of nothing.
 
 A `/ayat` command is also registered, showing the full verse text in the
 transcript on demand.
+
+## Integrating with your status line
+
+Claude Code's own `$.ui.status()` API pins a *separate* "plugin notice" row,
+always prefixed with the plugin's name and a warning-style icon by the
+engine — not configurable, and not the same thing as your real
+`statusLine.command` row. So instead of using it, this mod writes the day's
+ayat to a cache file, and you read it yourself from your status line script
+as one more segment, the same way you'd integrate any other status source.
+
+If your `~/.claude/settings.json` has a `statusLine.command` pointing at
+your own script, add something like this to it:
+
+```bash
+ayat_cache="$HOME/.claude/ayat-of-the-day-cache.json"
+if [ -f "$ayat_cache" ]; then
+  today_utc=$(date -u "+%Y-%m-%d")
+  ayat_out=$(node -e '
+    const fs = require("fs");
+    try {
+      const obj = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+      if (obj.date !== process.argv[2] || obj.unavailable) process.exit(0);
+      let text = String(obj.text || "");
+      if (text.length > 100) text = text.slice(0, 99).trimEnd() + "…";
+      process.stdout.write(`📖 ${obj.ref} — ${text}`);
+    } catch {}
+  ' "$ayat_cache" "$today_utc" 2>/dev/null)
+  [ -n "$ayat_out" ] && echo "$ayat_out"  # or append it as your own segment
+fi
+```
+
+If you don't have a custom status line script yet, this can be the whole
+thing — see [Claude Code's statusLine
+docs](https://docs.claude.com/en/docs/claude-code) for the `settings.json`
+shape.
 
 ## Translation note
 
