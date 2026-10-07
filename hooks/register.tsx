@@ -104,30 +104,47 @@ async function writeStatusCache($: any, ayat: Ayat | undefined, stale: boolean) 
   }
 }
 
+async function commandResult($: any): Promise<{ text: string }> {
+  const { ayat, stale } = await getTodaysAyat($)
+  return { text: fullText(ayat, stale) }
+}
+
+async function commandOutput($: any, e: any) {
+  const { Markdown } = $.ui.resolve(e)
+  const { ayat, stale } = await getTodaysAyat($)
+  return <Markdown text={fullText(ayat, stale)} />
+}
+
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     const { ayat, stale } = await getTodaysAyat($)
     await writeStatusCache($, ayat, stale)
 
+    // Two spelling aliases, same command - "ayah" is the more standard
+    // transliteration, "ayat" the more common one in casual use. Registering
+    // both avoids the exact spelling confusion that caused real problems
+    // earlier in this project (an unrelated "ayah-of-the-day@inline" plugin
+    // entry got mixed up with this "ayat-of-the-day" one).
     await $.command.register({
       name: 'ayat',
       description: "Show today's ayat in full, fetched live from api.alquran.cloud.",
+    })
+    await $.command.register({
+      name: 'ayah',
+      description: "Alias for /ayat - show today's ayat in full.",
     })
 
     return next(e)
   })
 
-  on('command.run', { command: 'ayat' }, async $ => {
-    const { ayat, stale } = await getTodaysAyat($)
-    return { text: fullText(ayat, stale) }
-  })
+  on('command.run', { command: 'ayat' }, $ => commandResult($))
+  on('command.run', { command: 'ayah' }, $ => commandResult($))
 
   // Draw the CommandOutput row ourselves, from a fresh lookup, instead of
   // letting the engine's default renderer frame the command.run text with a
-  // "plugin-name: " prefix.
-  on('ui.render', { component: 'CommandOutput', props: { command: 'ayat' } }, async ($, e) => {
-    const { Markdown } = $.ui.resolve(e)
-    const { ayat, stale } = await getTodaysAyat($)
-    return <Markdown text={fullText(ayat, stale)} />
-  })
+  // "plugin-name: " prefix. One hook per command name - the matcher's
+  // "command" value has to be a literal for the engine to recognize this as
+  // answering its own command instead of a generic gate.
+  on('ui.render', { component: 'CommandOutput', props: { command: 'ayat' } }, ($, e) => commandOutput($, e))
+  on('ui.render', { component: 'CommandOutput', props: { command: 'ayah' } }, ($, e) => commandOutput($, e))
 }

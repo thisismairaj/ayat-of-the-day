@@ -4,7 +4,7 @@
 
 A Claude Code mod that fetches a real Quranic ayat each day, live from
 [api.alquran.cloud](https://alquran.cloud/api), for you to show in your own
-status line — plus a `/ayat` command to see the full verse.
+status line — plus `/ayat` (or `/ayah`) to see the full verse.
 
 Example status line: `📖 2:286 — Allah does not burden a soul beyond what it can bear.`
 
@@ -15,7 +15,8 @@ Example status line: `📖 2:286 — Allah does not burden a soul beyond what it
   no server-side "random" endpoint needed)
 - Cached per day, so it only fetches once a day, and falls back to the last
   cached ayat if the network is down
-- `/ayat` command shows the full verse and its reference (e.g. `2:255`)
+- `/ayat` command shows the full verse and its reference (e.g. `2:255`) —
+  `/ayah` works too, same command under both spellings
 - Writes to a plain cache file your *own* status line script reads — not
   Claude Code's built-in "plugin notice" row, which always gets prefixed
   with the plugin's name and a warning icon by the engine, with no way for
@@ -56,8 +57,8 @@ result is also cached internally via `$.store`, so later sessions the same
 day reuse it instead of refetching, and if the API is ever unreachable, the
 last cached ayat is written instead of nothing.
 
-A `/ayat` command is also registered, showing the full verse text in the
-transcript on demand.
+`/ayat` and `/ayah` are also registered — same command, two spellings —
+showing the full verse text in the transcript on demand.
 
 ## Integrating with your status line
 
