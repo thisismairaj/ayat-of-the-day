@@ -1,10 +1,10 @@
 {
   "name": "ayat-of-the-day",
-  "description": "Fetches a daily Quranic ayat live from api.alquran.cloud, writes it to a cache file for your own status line",
+  "description": "Fetches a daily Quranic ayat live from api.alquran.cloud, shown in place of the spinner verb while Claude works",
   "owner": { "name": "thisismairaj", "url": "https://github.com/thisismairaj" },
   "plugins": [{
     "name": "ayat-of-the-day",
     "source": "./",
-    "description": "Fetches a daily Quranic ayat live from api.alquran.cloud, writes it to a cache file for your own status line"
+    "description": "Fetches a daily Quranic ayat live from api.alquran.cloud, shown in place of the spinner verb while Claude works"
   }]
 }

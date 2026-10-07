@@ -82,26 +82,14 @@ function fullText(ayat: Ayat | undefined, stale: boolean): string {
   return `**Ayat of the day — Quran ${ayat.ref}** (Saheeh International)\n\n> ${ayat.text}${staleNote}`
 }
 
-// $.ui.status pins a SEPARATE "plugin notice" row (always framed with the
-// plugin's name and a warning-style icon by the engine - not configurable,
-// and not the same thing as a real statusLine.command row). That's not what
-// we want here: we want to appear as one segment inside the user's own real
-// status line. So instead we write today's ayat to a fixed cache file, and
-// the user's statusline-command.sh reads it and appends it as a segment -
-// the same integration pattern used for the claude-pray plugin.
-async function homeDir($: any): Promise<string | undefined> {
-  return (await $.env.get('HOME')) ?? (await $.env.get('USERPROFILE'))
+function truncate(s: string, max: number): string {
+  return s.length > max ? s.slice(0, max - 1).trimEnd() + '…' : s
 }
 
-async function writeStatusCache($: any, ayat: Ayat | undefined, stale: boolean) {
-  const home = await homeDir($)
-  if (!home) return // nowhere reliable to write - statusline-command.sh just won't find anything
-  const payload = ayat ? { ...ayat, stale } : { date: todayLocal(), stale: true, unavailable: true }
-  try {
-    await $.fs.write(`${home}/.claude/ayat-of-the-day-cache.json`, JSON.stringify(payload))
-  } catch {
-    // best-effort - a write failure here shouldn't block session start
-  }
+function spinnerMessage(ayat: Ayat | undefined, stale: boolean): string {
+  if (!ayat) return '📖 Ayat of the day unavailable'
+  const staleNote = stale ? ' (cached)' : ''
+  return `📖 ${ayat.ref}${staleNote} — ${truncate(ayat.text, 140)}`
 }
 
 async function commandResult($: any): Promise<{ text: string }> {
@@ -115,10 +103,19 @@ async function commandOutput($: any, e: any) {
   return <Markdown text={fullText(ayat, stale)} />
 }
 
+// Cached once per session, read synchronously from the Spinner hook (which
+// fires on every animation tick, often several times a second) instead of
+// re-reading $.store on every single render. Set once in session.start,
+// reset naturally on a hot reload since module-level state doesn't survive
+// one (session.start fires again after a reload too).
+let sessionAyat: Ayat | undefined
+let sessionStale = false
+
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     const { ayat, stale } = await getTodaysAyat($)
-    await writeStatusCache($, ayat, stale)
+    sessionAyat = ayat
+    sessionStale = stale
 
     // Two spelling aliases, same command - "ayah" is the more standard
     // transliteration, "ayat" the more common one in casual use. Registering
@@ -147,4 +144,15 @@ export const register: Register = on => {
   // answering its own command instead of a generic gate.
   on('ui.render', { component: 'CommandOutput', props: { command: 'ayat' } }, ($, e) => commandOutput($, e))
   on('ui.render', { component: 'CommandOutput', props: { command: 'ayah' } }, ($, e) => commandOutput($, e))
+
+  // Replace the spinner's word/verb ("Sauteing...", "Proofing...") with
+  // today's ayat while Claude is working - the moment the user is actually
+  // looking at the screen with nothing else to read. Rewriting just
+  // `message` (not drawing a whole custom tree) keeps the engine's own
+  // elapsed-time/token/effort info and ellipsis animation intact; it only
+  // supplies the text that word/message would otherwise show.
+  on('ui.render', { component: 'Spinner' }, ($, e, next) => {
+    const message = spinnerMessage(sessionAyat, sessionStale)
+    return next({ ...e, props: { ...e.props, message } })
+  })
 }
