@@ -21,7 +21,7 @@
     <!-- prompt + status line -->
     <text x="28" y="68" font-family="Consolas, 'Courier New', monospace" font-size="20" fill="#8b949e">$ claude</text>
     <text x="28" y="100" font-family="Consolas, 'Courier New', monospace" font-size="19" fill="#ffffff">
-      <tspan fill="#58a6ff">main</tspan><tspan fill="#484f58"> | </tspan><tspan fill="#8b949e">ctx 80% left</tspan><tspan fill="#484f58"> | </tspan><tspan fill="#e3b341">📖 2:286</tspan><tspan fill="#c9d1d9"> — Allah does not burden a soul beyond what it can bear</tspan>
+      <tspan fill="#58a6ff">main</tspan><tspan fill="#484f58"> | </tspan><tspan fill="#8b949e">ctx 80% left</tspan><tspan fill="#484f58"> | </tspan><tspan fill="#e3b341">📖 94:5</tspan><tspan fill="#c9d1d9"> — Indeed, with hardship comes ease</tspan>
     </text>
   </g>
 
