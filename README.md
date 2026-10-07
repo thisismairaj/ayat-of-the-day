@@ -74,7 +74,7 @@ your own script, add something like this to it:
 ```bash
 ayat_cache="$HOME/.claude/ayat-of-the-day-cache.json"
 if [ -f "$ayat_cache" ]; then
-  today_utc=$(date -u "+%Y-%m-%d")
+  today_local=$(date "+%Y-%m-%d")  # local day - matches the mod's own local-date cache key
   ayat_out=$(node -e '
     const fs = require("fs");
     try {
@@ -84,7 +84,7 @@ if [ -f "$ayat_cache" ]; then
       if (text.length > 100) text = text.slice(0, 99).trimEnd() + "…";
       process.stdout.write(`📖 ${obj.ref} — ${text}`);
     } catch {}
-  ' "$ayat_cache" "$today_utc" 2>/dev/null)
+  ' "$ayat_cache" "$today_local" 2>/dev/null)
   [ -n "$ayat_out" ] && echo "$ayat_out"  # or append it as your own segment
 fi
 ```

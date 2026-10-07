@@ -10,18 +10,29 @@ const EDITION = 'en.sahih' // Saheeh International translation
 
 type Ayat = { ref: string; text: string; date: string }
 
-function todayUTC(): string {
-  return new Date().toISOString().slice(0, 10) // YYYY-MM-DD
+// Local calendar day, not UTC - the ayat should roll over at the user's own
+// midnight, not at 00:00 UTC (which was 5am in Karachi, for example). Date's
+// local getters (getFullYear/getMonth/getDate, no "UTC") already reflect the
+// machine's real timezone; the only trick is still routing them through
+// Date.UTC() for the day-of-year subtraction, which sidesteps DST entirely
+// by treating the local Y/M/D as if they were a UTC instant - same pattern
+// as the original UTC-only version, just fed local components instead.
+function todayLocal(): string {
+  const d = new Date()
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
 }
 
-function dayOfYear(d: Date): number {
-  const start = Date.UTC(d.getUTCFullYear(), 0, 0)
-  const diff = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - start
-  return Math.floor(diff / 86400000)
+function dayOfYearLocal(d: Date): number {
+  const start = Date.UTC(d.getFullYear(), 0, 0)
+  const cur = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())
+  return Math.floor((cur - start) / 86400000)
 }
 
 function todaysGlobalAyahNumber(): number {
-  return (dayOfYear(new Date()) % TOTAL_AYAT) + 1
+  return (dayOfYearLocal(new Date()) % TOTAL_AYAT) + 1
 }
 
 async function fetchTodaysAyat($: any): Promise<Ayat | undefined> {
@@ -37,7 +48,7 @@ async function fetchTodaysAyat($: any): Promise<Ayat | undefined> {
     return {
       ref: `${data.surah.number}:${data.numberInSurah}`,
       text: String(data.text),
-      date: todayUTC(),
+      date: todayLocal(),
     }
   } catch {
     return undefined
@@ -45,7 +56,7 @@ async function fetchTodaysAyat($: any): Promise<Ayat | undefined> {
 }
 
 async function getTodaysAyat($: any): Promise<{ ayat: Ayat | undefined; stale: boolean }> {
-  const today = todayUTC()
+  const today = todayLocal()
   const cached = (await $.store.get('ayat-cache')) as Ayat | undefined
 
   if (cached?.date === today) {
@@ -77,7 +88,7 @@ function fullText(ayat: Ayat | undefined, stale: boolean): string {
 // we want here: we want to appear as one segment inside the user's own real
 // status line. So instead we write today's ayat to a fixed cache file, and
 // the user's statusline-command.sh reads it and appends it as a segment -
-// see README.md's "Integrating with your status line" section.
+// the same integration pattern used for the claude-pray plugin.
 async function homeDir($: any): Promise<string | undefined> {
   return (await $.env.get('HOME')) ?? (await $.env.get('USERPROFILE'))
 }
@@ -85,7 +96,7 @@ async function homeDir($: any): Promise<string | undefined> {
 async function writeStatusCache($: any, ayat: Ayat | undefined, stale: boolean) {
   const home = await homeDir($)
   if (!home) return // nowhere reliable to write - statusline-command.sh just won't find anything
-  const payload = ayat ? { ...ayat, stale } : { date: todayUTC(), stale: true, unavailable: true }
+  const payload = ayat ? { ...ayat, stale } : { date: todayLocal(), stale: true, unavailable: true }
   try {
     await $.fs.write(`${home}/.claude/ayat-of-the-day-cache.json`, JSON.stringify(payload))
   } catch {
