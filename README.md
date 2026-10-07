@@ -1,5 +1,7 @@
 # ayat-of-the-day
 
+![ayat-of-the-day](docs/banner.png)
+
 A Claude Code status-line mod that shows a real Quranic ayat each day, fetched
 live from [api.alquran.cloud](https://alquran.cloud/api), with a `/ayat`
 command to see the full verse.
