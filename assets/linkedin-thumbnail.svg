@@ -1,0 +1,47 @@
+<svg width="1200" height="628" viewBox="0 0 1200 628" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="628" fill="url(#bg)"/>
+
+  <!-- eyebrow label -->
+  <text x="80" y="76" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="16" font-weight="600" letter-spacing="2" fill="#2ea043">OPEN SOURCE · CLAUDE CODE PLUGIN</text>
+
+  <!-- terminal card -->
+  <g transform="translate(80, 104)">
+    <rect width="1040" height="130" rx="10" fill="#1c2128" stroke="#30363d" stroke-width="1"/>
+    <!-- traffic lights -->
+    <circle cx="28" cy="28" r="6" fill="#ff5f56"/>
+    <circle cx="50" cy="28" r="6" fill="#ffbd2e"/>
+    <circle cx="72" cy="28" r="6" fill="#27c93f"/>
+    <!-- prompt + status line -->
+    <text x="28" y="68" font-family="Consolas, 'Courier New', monospace" font-size="20" fill="#8b949e">$ claude</text>
+    <text x="28" y="100" font-family="Consolas, 'Courier New', monospace" font-size="19" fill="#ffffff">
+      <tspan fill="#58a6ff">main</tspan><tspan fill="#484f58"> | </tspan><tspan fill="#8b949e">ctx 80% left</tspan><tspan fill="#484f58"> | </tspan><tspan fill="#e3b341">📖 2:286</tspan><tspan fill="#c9d1d9"> — Allah does not burden a soul beyond what it can bear</tspan>
+    </text>
+  </g>
+
+  <!-- large pull quote -->
+  <text x="600" y="350" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif"
+        font-style="italic" font-size="38" fill="#f0f6fc">"Indeed, with hardship</text>
+  <text x="600" y="402" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif"
+        font-style="italic" font-size="38" fill="#f0f6fc">comes ease."</text>
+  <text x="600" y="444" text-anchor="middle" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="18" fill="#6e7681">Quran 94:5 — fetched live, a new ayat every day</text>
+
+  <!-- footer: icon + project name -->
+  <g transform="translate(600, 540)">
+    <g transform="translate(-170, -14)">
+      <circle cx="0" cy="0" r="18" fill="#2ea043"/>
+      <circle cx="8" cy="-4" r="16" fill="#0d1117"/>
+    </g>
+    <text x="-130" y="-7" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif"
+          font-size="28" font-weight="700" fill="#ffffff">ayat-of-the-day</text>
+    <text x="0" y="30" text-anchor="middle" font-family="Consolas, 'Courier New', monospace"
+          font-size="17" fill="#6e7681">github.com/thisismairaj/ayat-of-the-day</text>
+  </g>
+</svg>
