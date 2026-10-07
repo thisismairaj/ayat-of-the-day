@@ -62,7 +62,7 @@ not something generated or guessed.
 
 ## Development
 
-This is a function-hooks mod, not a compiled plugin — `hooks/register.ts`
+This is a function-hooks mod, not a compiled plugin — `hooks/register.tsx`
 runs directly, no build step. To develop it locally, use Claude Code's
 `plugin-authoring` skill, which hot-reloads a mod folder on save.
 

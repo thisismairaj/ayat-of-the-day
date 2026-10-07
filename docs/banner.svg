@@ -1,20 +1,20 @@
-<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
-  <rect width="1200" height="630" fill="#ffffff"/>
+<svg width="1200" height="400" viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="400" fill="#ffffff"/>
 
   <!-- crescent moon: green circle with a white circle carved out of its
        upper-right area, against the white background -->
-  <g transform="translate(600, 200)">
+  <g transform="translate(600, 130)">
     <circle cx="0" cy="0" r="58" fill="#1f6f43"/>
     <circle cx="26" cy="-14" r="52" fill="#ffffff"/>
   </g>
 
   <!-- title -->
-  <text x="600" y="330" text-anchor="middle"
+  <text x="600" y="260" text-anchor="middle"
         font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif"
         font-size="56" font-weight="700" fill="#1a1a2e">ayat-of-the-day</text>
 
   <!-- badge: two-tone pill, "open source" | "MIT license" -->
-  <g transform="translate(600, 378)">
+  <g transform="translate(600, 320)">
     <rect x="-172" y="-18" width="172" height="36" rx="6" fill="#44546b"/>
     <rect x="0" y="-18" width="172" height="36" rx="6" fill="#1f6f43"/>
     <text x="-86" y="6" text-anchor="middle"
@@ -24,15 +24,4 @@
           font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif"
           font-size="16" fill="#ffffff">MIT license</text>
   </g>
-
-  <!-- tagline -->
-  <text x="600" y="440" text-anchor="middle"
-        font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif"
-        font-size="23" fill="#6e7681">A Claude Code plugin that shows a real Quranic ayat in your status line,</text>
-  <text x="600" y="472" text-anchor="middle"
-        font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif"
-        font-size="23" fill="#6e7681">fetched live every day.</text>
-  <text x="600" y="512" text-anchor="middle"
-        font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif"
-        font-size="23" fill="#6e7681">One verse. One intention. Before the work begins.</text>
 </svg>
