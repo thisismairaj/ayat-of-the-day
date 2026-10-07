@@ -1,0 +1,10 @@
+{
+  "name": "ayat-of-the-day",
+  "version": "0.1.0",
+  "description": "Shows a daily Quranic ayat in the status line, fetched live from api.alquran.cloud, with a /ayat command for the full verse",
+  "author": {
+    "name": "thisismairaj",
+    "url": "https://github.com/thisismairaj"
+  },
+  "license": "MIT"
+}
