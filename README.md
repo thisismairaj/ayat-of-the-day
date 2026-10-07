@@ -9,10 +9,12 @@ you're actually looking at the screen with nothing else to read), with
 `/ayat` or `/ayah` to see the full verse; and as a standalone CLI
 (`npx ayat-of-the-day`) that works anywhere, not just inside Claude Code.
 
-> **Note:** the spinner display is a recent change (replacing an earlier
-> status-line approach) and is still being refined for visual stability on
-> long ayat - see [issues](https://github.com/thisismairaj/ayat-of-the-day/issues)
-> if you notice it looking off.
+> **Changed in 0.5.0:** the ayat used to live in the status line, always
+> visible but cramped and truncated with ellipses. It now replaces the
+> spinner's verb instead - shown only while Claude is actively working,
+> which is also the moment you're actually looking at the screen with
+> nothing else to read. If anything about the spinner display looks off on
+> your terminal, [open an issue](https://github.com/thisismairaj/ayat-of-the-day/issues).
 
 ## Features
 
