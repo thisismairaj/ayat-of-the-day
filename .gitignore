@@ -3,3 +3,4 @@ docs/
 
 # CLI build artifacts
 node_modules/
+.claude-brain/

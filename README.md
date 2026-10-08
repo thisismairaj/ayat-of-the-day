@@ -39,15 +39,6 @@ you're actually looking at the screen with nothing else to read), with
 
 ## Installation
 
-Inside a Claude Code session, run:
-
-```
-/plugin marketplace add thisismairaj/ayat-of-the-day
-/plugin install ayat-of-the-day
-```
-
-Or via the CLI:
-
 ```bash
 claude plugin marketplace add thisismairaj/ayat-of-the-day
 claude plugin install ayat-of-the-day

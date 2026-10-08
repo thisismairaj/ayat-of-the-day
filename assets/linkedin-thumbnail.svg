@@ -18,11 +18,9 @@
     <circle cx="28" cy="28" r="6" fill="#ff5f56"/>
     <circle cx="50" cy="28" r="6" fill="#ffbd2e"/>
     <circle cx="72" cy="28" r="6" fill="#27c93f"/>
-    <!-- prompt + status line -->
+    <!-- prompt + spinner line (ayat replaces the spinner's verb while Claude works) -->
     <text x="28" y="68" font-family="Consolas, 'Courier New', monospace" font-size="20" fill="#8b949e">$ claude</text>
-    <text x="28" y="100" font-family="Consolas, 'Courier New', monospace" font-size="19" fill="#ffffff">
-      <tspan fill="#58a6ff">main</tspan><tspan fill="#484f58"> | </tspan><tspan fill="#8b949e">ctx 80% left</tspan><tspan fill="#484f58"> | </tspan><tspan fill="#e3b341">📖 94:5</tspan><tspan fill="#c9d1d9"> — Indeed, with hardship comes ease</tspan>
-    </text>
+    <text x="28" y="100" font-family="Consolas, 'Courier New', monospace" font-size="19" fill="#ffffff" xml:space="preserve"><tspan fill="#e3b341">📖 94:5</tspan><tspan fill="#c9d1d9"> &#8212; Indeed, with hardship comes ease&#8230;</tspan><tspan fill="#484f58"> (12s)</tspan></text>
   </g>
 
   <!-- large pull quote -->
