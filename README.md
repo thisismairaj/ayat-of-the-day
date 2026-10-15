@@ -16,6 +16,25 @@ you're actually looking at the screen with nothing else to read), with
 > nothing else to read. If anything about the spinner display looks off on
 > your terminal, [open an issue](https://github.com/thisismairaj/ayat-of-the-day/issues).
 
+## Why this matters
+
+This isn't a productivity feature, and it doesn't pretend to be one. The real
+target is the handful of seconds every Claude Code turn already has built
+into it: the stretch where a tool call is running and the spinner is cycling
+through a throwaway verb like "Sauteing..." or "Proofing..." - which is also
+the exact moment you're actually looking at the screen with nothing to read.
+
+Swapping that verb for a real ayat, fetched live instead of hardcoded,
+doesn't make Claude finish any faster. It changes what that dead time feels
+like: worth a glance instead of worth tuning out. If a verse in your spinner
+isn't something you want to see, skipping this one plugin is an easy call -
+it's a small, opinionated cosmetic mod, not infrastructure you depend on.
+
+**One honest limit:** the ayat is deterministic by calendar day, not a
+random daily draw across the whole Quran - everyone sees the same verse on
+the same date, and the rotation repeats on the same calendar dates every
+year.
+
 ## Features
 
 - Real ayat text, fetched live — not a hardcoded list
